@@ -3,6 +3,8 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -15,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class GPACalculator extends JFrame  implements ActionListener {
+public class GPACalculator extends JFrame  implements ActionListener, FocusListener {
 
 	//PRIVATE INSTANCE VARIABLES ++++++++++++++++++++
 	private JPanel _contentPane, _todoPanel;
@@ -40,6 +42,8 @@ public class GPACalculator extends JFrame  implements ActionListener {
 		this._currentGPATextField.addActionListener(this);
 		this._numCourseComboBox.addActionListener(this);
 		this._calculateGPA.addActionListener(this);
+		this._creditHoursTextField.addFocusListener(this);
+		this._currentGPATextField.addFocusListener(this);
 	}
 
 	//PRIVATE MEHTODS ++++++++++++++++++++
@@ -94,7 +98,8 @@ public class GPACalculator extends JFrame  implements ActionListener {
 		this._contentPane.add(this._gradeLabel);
 		
 		this._result = new JLabel();
-		this._result.setBounds(224, 473, 76, 14);
+		
+		this._result.setBounds(224, 473, 200, 14);
 		this._contentPane.add(this._result);
 
 		//Adding TextFields +++++++++++
@@ -182,6 +187,7 @@ public class GPACalculator extends JFrame  implements ActionListener {
 			
 			// redraw the todoPanel
 			this._todoPanel.revalidate();	
+			this._todoPanel.repaint();
 			
 		}
 		
@@ -189,7 +195,9 @@ public class GPACalculator extends JFrame  implements ActionListener {
 			double product, totalProduct = 0;
 			double totalCreditHours = 0;
 			double GPA = 0;
+			double roundGPA = 0;
 			for (Components added: this._addComponents){
+			
 				this._creditHours = added.getCreditHours();
 				totalCreditHours = totalCreditHours + this._creditHours;
 				this._grade = added.getCalGrade();
@@ -197,7 +205,24 @@ public class GPACalculator extends JFrame  implements ActionListener {
 				totalProduct = product + totalProduct; 
 			}
 			GPA = (totalProduct + (this._currentGPA * this._creditHoursEarned))/ (totalCreditHours + this._creditHoursEarned);
-			this._result.setText(String.valueOf("Your GPA is: " + GPA));
+			roundGPA = (double) Math.round(GPA*100.0)/100.0;
+			this._result.setText(String.valueOf("Your GPA is: " + roundGPA));
+		}
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent event) {
+		if(event.getSource()==this._creditHoursTextField){
+			this._creditHoursEarned = Double.parseDouble(this._creditHoursTextField.getText());
+		}
+		
+		if(event.getSource()==this._currentGPATextField){
+			this._currentGPA = Double.parseDouble(this._currentGPATextField.getText());
 		}
 	}
 }

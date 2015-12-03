@@ -3,6 +3,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -12,7 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Components extends JFrame implements ActionListener {
+public class Components extends JFrame implements ActionListener, FocusListener {
 
 	//Private instance variables ++++++++++
 	private JLabel _gridLabel;
@@ -88,6 +90,8 @@ public class Components extends JFrame implements ActionListener {
 			this._gridComboBox.addActionListener(this);
 			this._gridHoursTField.addActionListener(this);
 			this._gridCodeTextField.addActionListener(this);
+			this._gridHoursTField.addFocusListener(this);
+			this._gridCodeTextField.addFocusListener(this);
 			
 		}
 
@@ -136,9 +140,11 @@ public class Components extends JFrame implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if(event.getSource()==this._gridComboBox){
 				this._calGrade = grade();
+				
 			}
 			if(event.getSource()==this._gridHoursTField){
 				this._creditHours = Integer.parseInt(this._gridHoursTField.getText());
+				
 			}
 			if (event.getSource()== this._gridCodeTextField){
 				if(this._gridCodeTextField.equals("")){
@@ -161,6 +167,37 @@ public class Components extends JFrame implements ActionListener {
 			this._gridHoursTField.removeAll();
 			this._gridComboBox.removeActionListener(this);
 			this._gridComboBox.removeAll();
+		}
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			
+		}
+
+		@Override
+		public void focusLost(FocusEvent event) {
+
+			if (event.getSource() == this._gridHoursTField){
+				try{
+					this._creditHours = Integer.parseInt(this._gridHoursTField.getText());
+				}
+				catch(Exception e){
+					JOptionPane.showMessageDialog(null, "No credit hours ");
+					this._gridHoursTField.setFocusable(true);
+				}
+			}
+			if (event.getSource()== this._gridCodeTextField){
+				try {
+					if(this._gridCodeTextField.equals("")){
+						JOptionPane.showInputDialog("Course Name is required \nPlease Enter Course Name");
+					}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "No course ");
+					this._gridCodeTextField.setFocusable(true);
+				}
+				
+			}
+			
 		}
 
 }
